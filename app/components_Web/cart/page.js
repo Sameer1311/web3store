@@ -1,26 +1,29 @@
 "use client";
-import { useEffect, React } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
-
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
-const Cart = ({ Add_Cart, setAdd_Cart , theme = "light" }) => {
-  
-  const router = useRouter()
+const Cart = ({ Add_Cart = [], setAdd_Cart, theme = "light" }) => {
+  const router = useRouter();
 
   useEffect(() => {
-    localStorage.setItem("cartitems", JSON.stringify(Add_Cart));
+    if (Add_Cart) {
+      localStorage.setItem("cartitems", JSON.stringify(Add_Cart));
+    }
   }, [Add_Cart]);
 
   const removeFrom_cart = (index) => {
+    if (!Add_Cart) return;
     const Updated = Add_Cart.filter((_, i) => i !== index);
     setAdd_Cart(Updated);
   };
-  const thankspage = ()=>{
-    alert("Thanks for visiting my page ")
-    router.replace('/')    
-  }
+
+  const thankspage = () => {
+    alert("Thanks for visiting my page");
+    router.replace("/");
+  };
+
   return (
     <section className="fixed inset-0 flex items-center justify-center z-40 bg-black bg-opacity-50">
       <div
@@ -29,7 +32,7 @@ const Cart = ({ Add_Cart, setAdd_Cart , theme = "light" }) => {
         }`}
       >
         <h2 className="text-center font-bold text-2xl mb-6">Your Cart</h2>
-        {Add_Cart.length === 0 ? (
+        {Add_Cart?.length === 0 ? (
           <div className="text-center space-y-4">
             <p className="font-bold text-gray-500">Your cart is empty.</p>
             <Button
@@ -45,25 +48,25 @@ const Cart = ({ Add_Cart, setAdd_Cart , theme = "light" }) => {
           </div>
         ) : (
           <div className="space-y-6">
-            {Add_Cart.map((ele, index) => (
+            {Add_Cart?.map((ele, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between border-b pb-4 last:border-b-0"
               >
                 <div className="flex items-center space-x-4">
                   <Image
-                    src={ele.image}
-                    alt={`Product image of ${ele.title}`}
+                    src={ele?.image || "/default-image.jpg"} // Provide a fallback image
+                    alt={`Product image of ${ele?.title || "Unknown Product"}`}
                     width={80}
                     height={80}
                     className="rounded-md"
                   />
                   <div className="max-w-[60%]">
                     <span className="font-medium block truncate">
-                      {ele.title}
+                      {ele?.title || "No title"}
                     </span>
                     <span className="text-sm text-gray-500">
-                      ${ele.price.toFixed(2)}
+                      ${ele?.price ? ele.price.toFixed(2) : "0.00"}
                     </span>
                   </div>
                 </div>
@@ -86,10 +89,9 @@ const Cart = ({ Add_Cart, setAdd_Cart , theme = "light" }) => {
           <Button
             className="px-6 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
             onClick={thankspage}
-  >
+          >
             Buy Now
           </Button>
-          {/* {buy && <Buy_Now />} */}
           <Button
             className={`px-6 py-2 rounded ${
               theme === "dark"
